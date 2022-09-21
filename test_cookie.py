@@ -15,8 +15,3 @@ class TestCookie:
 
         assert actual_cookie_value == expected_cookie_value, "Actual cookie value is not correct"
 
-
-        cookie = response.cookies
-        print(cookie.values())
-        print(cookie.get_dict())
-
