@@ -1,6 +1,6 @@
-import requests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
+from lib.my_requests import MyRequests
 import random
 import string
 import pytest
@@ -11,7 +11,7 @@ class TestUserRegister(BaseCase):
     def test_create_user(self):
         data = self.prepare_registration_data()
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_status_code(response, 200)
         Assertions.assert_json_has_key(response, "id")
@@ -20,7 +20,7 @@ class TestUserRegister(BaseCase):
         email = 'vinkotov@example.com'
         data = self.prepare_registration_data(email)
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_status_code(response, 400)
         Assertions.assert_response_content(response, f"Users with email '{email}' already exists")
@@ -29,7 +29,7 @@ class TestUserRegister(BaseCase):
         data = self.prepare_registration_data()
         data['email'] = data['email'].replace("@", "")
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_status_code(response, 400)
         Assertions.assert_response_content(response, "Invalid email format")
@@ -38,7 +38,7 @@ class TestUserRegister(BaseCase):
         data = self.prepare_registration_data()
         data['username'] = random.choice(string.ascii_letters)
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_status_code(response, 400)
         Assertions.assert_response_content(response, "The value of 'username' field is too short")
@@ -47,7 +47,7 @@ class TestUserRegister(BaseCase):
         data = self.prepare_registration_data()
         data['username'] = ''.join(random.choices(string.ascii_letters, k=251))
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_status_code(response, 400)
         Assertions.assert_response_content(response, "The value of 'username' field is too long")
@@ -74,7 +74,7 @@ class TestUserRegister(BaseCase):
                 missed_param = 'email'
 
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_status_code(response, 400)
         Assertions.assert_response_content(response, f"The following required params are missed: {missed_param}")
