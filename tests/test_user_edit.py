@@ -3,8 +3,11 @@ from lib.assertions import Assertions
 from lib.my_requests import MyRequests
 import random
 import string
+import allure
 
+@allure.epic("Updating cases")
 class TestUserEdit(BaseCase):
+
     def setup(self):
         # REGISTER
         self.register_data = self.prepare_registration_data()
@@ -28,6 +31,8 @@ class TestUserEdit(BaseCase):
         self.auth_sid = self.get_cookie(response2, "auth_sid")
         self.token = self.get_header(response2, "x-csrf-token")
 
+    @allure.description("This test checks successful name update of just created user")
+    @allure.tag("Positive")
     def test_edit_just_created_user(self):
         #EDIT
         new_name = "Changed_name"
@@ -47,6 +52,8 @@ class TestUserEdit(BaseCase):
         Assertions.assert_status_code(response, 200)
         Assertions.assert_json_value_by_name(response2, "firstName", new_name, "Wrong user name after edit")
 
+    @allure.description("This test checks that it's not possible to update user without being authorized")
+    @allure.tag("Negative")
     def test_edit_just_created_user_without_authorization(self):
         # EDIT
         new_name = "Changed_name"
@@ -58,6 +65,8 @@ class TestUserEdit(BaseCase):
         Assertions.assert_status_code(response, 400)
         Assertions.assert_response_content(response, "Auth token not supplied")
 
+    @allure.description("This test checks that it's not possible to update user with incorrectly formatted email")
+    @allure.tag("Negative")
     def test_edit_just_created_user_wrong_email(self):
         #EDIT
         new_email = self.register_data['email'].replace("@", "")
@@ -70,6 +79,8 @@ class TestUserEdit(BaseCase):
         Assertions.assert_status_code(response, 400)
         Assertions.assert_response_content(response, "Invalid email format")
 
+    @allure.description("This test checks that it's not possible to update user with very short firstName")
+    @allure.tag("Negative")
     def test_edit_just_created_user_too_short_first_name(self):
         #EDIT
         new_name = random.choice(string.ascii_letters)
@@ -82,6 +93,8 @@ class TestUserEdit(BaseCase):
         Assertions.assert_status_code(response, 400)
         Assertions.assert_response_content(response, '{"error":"Too short value for field firstName"}')
 
+    @allure.description("This test checks that it's not possible to update user while being authorized by another user")
+    @allure.tag("Negative")
     def test_edit_just_created_user_authorized_by_another_user(self):
         # REGISTER another user
         register_data2 = self.prepare_registration_data()

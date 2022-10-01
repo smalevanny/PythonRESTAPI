@@ -1,7 +1,9 @@
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 from lib.my_requests import MyRequests
+import allure
 
+@allure.epic("Deletion cases")
 class TestuserDelete(BaseCase):
 
     def setup(self):
@@ -27,6 +29,8 @@ class TestuserDelete(BaseCase):
         self.auth_sid = self.get_cookie(response2, "auth_sid")
         self.token = self.get_header(response2, "x-csrf-token")
 
+    @allure.description("This test checks that it's not possible to delete user with id=2")
+    @allure.tag("Negative")
     def test_delete_user_by_id_2(self):
         data = {'email': 'vinkotov@example.com', 'password': '1234'}
 
@@ -43,6 +47,8 @@ class TestuserDelete(BaseCase):
         Assertions.assert_status_code(response2, 400)
         Assertions.assert_response_content(response2, 'Please, do not delete test users with ID 1, 2, 3, 4 or 5.')
 
+    @allure.description("This test checks successful deletion of a just created user")
+    @allure.tag("Positive")
     def test_delete_user(self):
         response = MyRequests.delete(f"/user/{self.user_id}",
                                   headers={"x-csrf-token": self.token},
@@ -58,6 +64,9 @@ class TestuserDelete(BaseCase):
         Assertions.assert_status_code(response2, 404)
         Assertions.assert_response_content(response2, 'User not found')
 
+    @allure.description("This test checks that it not possible to delete a user, while being authorized by another user")
+    @allure.tag("Negative")
+    @allure.issue("www.url_of_the_bug_in_bug_tracking_system.com", "Name of a bug")
     def test_delete_wrong_user(self):
         data = {'email': 'vinkotov@example.com', 'password': '1234'}
 

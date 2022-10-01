@@ -1,8 +1,12 @@
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 from lib.my_requests import MyRequests
+import allure
 
+@allure.epic("Fetching cases")
 class TestuserGet(BaseCase):
+    @allure.description("This test checks that not authorized user can fetch only username of requested user")
+    @allure.tag("Positive")
     def test_get_user_by_id_not_authorized(self):
         response = MyRequests.get("/user/2")
 
@@ -11,7 +15,8 @@ class TestuserGet(BaseCase):
         Assertions.assert_json_has_key(response, "username")
         Assertions.assert_json_has_not_keys(response, not_expected_keys)
 
-
+    @allure.description("This test checks successful fetching of all user data")
+    @allure.tag("Positive")
     def test_get_user_by_id_authorized(self):
         data = {'email': 'vinkotov@example.com', 'password': '1234'}
 
@@ -28,6 +33,8 @@ class TestuserGet(BaseCase):
         expected_keys = ["username", "email", "firstName", "lastName"]
         Assertions.assert_json_has_keys(response2, expected_keys)
 
+    @allure.description("This test checks that it's possible to fetch only username of a user, while being authorized by another user")
+    @allure.tag("Negative")
     def test_get_another_user_by_id_authorized(self):
         data = {'email': 'vinkotov@example.com', 'password': '1234'}
 
